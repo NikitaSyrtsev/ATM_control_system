@@ -26,7 +26,8 @@ int main(void) {
     FILE* fp;
     char filename[50], reg_phone[20], reg_password[32];
 
-    int option;
+    int option, choice;
+    int amount;
     char cont = 'y';
 
     printf("\n\tChoose the option:\n");
@@ -76,7 +77,42 @@ int main(void) {
                     printf("\n\tPress '3' to withdraw money.");
                     printf("\n\tPress '4' to transfer money.");
                     printf("\n\tPress '5' to change the password.");
-                    printf("\n\n\tPress 5 for changing password\n\n");
+                    printf("\n\n\tEnter your choice: ");
+                    scanf("%d", &choice);
+
+                    switch (choice) {
+                        case 1:
+                            printf("\n\tYour current balance is %.2f", user.balance);
+                            break;
+                        case 2:
+                            printf("\n\tEnter the amount to be added: ");
+                            scanf("%d", &amount);
+                            user.balance += amount;
+                            fp = fopen(filename, "w");
+                            fwrite(&user, sizeof(struct User), 1, fp);
+                            if (fwrite != NULL) printf("\n\tSuccesfully deposited! Your current balance is %.2f.", user.balance);
+                            fclose(fp);
+                            break;
+                        case 3:
+                            printf("\n\tEnter the amount to be withdrawn: ");
+                            scanf("%d", &amount);
+                            if (amount > user.balance) {
+                                printf("\n\tInsufficeint balance! Your withdrawn is %d", amount);
+                                printf("\n\tYour current balance is %.2f", user.balance);
+                            }
+                            else {
+                                user.balance -= amount;
+                                fp = fopen(filename, "w");
+                                fwrite(&user, sizeof(struct User), 1, fp);
+                                if (fwrite != NULL) printf("\n\tSuccesfully withdrawn! Your current balance is %.2f.", user.balance);
+                                fclose(fp);
+                            }
+                            break;
+                        case 4:
+                    }
+
+                    printf("\n\tDo you want to continue? [y/n]...");
+                    scanf("%s", &cont);
                 }
             }
             else {
