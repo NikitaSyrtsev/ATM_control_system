@@ -21,18 +21,18 @@ struct User {
 
 int main(void) {
 
-    struct User user;
+    struct User user, user_copy;
 
     FILE* fp;
-    char filename[50], reg_phone[20], reg_password[32];
+    char filename[50], reg_phone[20], reg_password[32], change_password[32];
 
-    int option, choice;
-    int amount;
+    int option, choice, amount;
     char cont = 'y';
 
     printf("\n\tChoose the option:\n");
     printf("\n\t\t1. Register an account.");
     printf("\n\t\t2. Login to an account.\n");
+    printf("\n\t\tType any other key to exit the terminal.\n");
     printf("\n\tType '1' or '2' and press 'Enter' to the console: ");
 
     scanf("%d", &option);
@@ -97,7 +97,7 @@ int main(void) {
                             printf("\n\tEnter the amount to be withdrawn: ");
                             scanf("%d", &amount);
                             if (amount > user.balance) {
-                                printf("\n\tInsufficeint balance! Your withdrawn is %d", amount);
+                                printf("\n\tInsufficeint balance! Your desired withdrawn is %d", amount);
                                 printf("\n\tYour current balance is %.2f", user.balance);
                             }
                             else {
@@ -109,6 +109,63 @@ int main(void) {
                             }
                             break;
                         case 4:
+                            printf("\n\tPlease enter the phone number to transfer the balance:");
+                            scanf("%s", reg_phone);
+                            fp = fopen(strcat(filename, ".dat"), "r");
+                            printf("\n\tPlease enter the amount to transfer:");
+                            scanf("%d", &amount);
+                            strcpy(filename, reg_phone);
+                            if (fp == NULL) {
+                                printf("\nAccount number is not registered. Please, try again.");
+                            }
+                            else {
+                                fread(&user_copy, sizeof(struct User), 1, fp);
+                            }
+                            fclose(fp);
+                            if (amount > user.balance) {
+                                printf("\n\tInsufficeint balance! Your desired transfer is %d", amount);
+                                printf("\n\tYour current balance is %.2f", user.balance);
+                            }
+                            else {
+                                strcpy(filename, reg_phone);
+                                fp = fopen(strcat(filename, ".dat"), "r");
+                                fread(&user_copy, sizeof(struct User), 1, fp);
+                                fclose(fp);
+                                fp = fopen(filename, "w");
+                                user_copy.balance += amount;
+                                fwrite(&user_copy, sizeof(struct User), 1, fp);
+                                fclose(fp);
+                                if (fwrite != NULL) {
+                                    printf("\n\tYou have succesfully transfered %d to %s",amount, reg_phone);
+                                    strcpy(filename, user.phone_num);
+                                    fp = fopen(strcat(filename, ".dat"), "w");
+                                    fwrite(&user, sizeof(struct User), 1, fp);
+                                    fclose(fp);
+                                }
+                            }
+                            break; 
+                        case 5:
+                            printf("\n\tPlease enter your OLD password: ");
+                            scanf("%s", change_password);
+                            if (strcmp(change_password, user.password)) {
+                                printf("\n\tEntered password is wrong!");
+                            }
+                            else {
+                                printf("\n\tPlease enter your NEW password: ");
+                                scanf("%s", change_password);
+                                fp = fopen(filename, "w");
+                                strcpy(user.password, change_password);
+                                fwrite(&user_copy, sizeof(struct User), 1, fp);
+                                if (fwrite != NULL) {
+                                    printf("\n\tYour password was successfully updated.");
+                                }
+                                else {
+                                    printf("You can not use empty password!");
+                                }
+                            }
+                            break;
+                        default:
+                            printf("\n\tINVALID OPTION.");
                     }
 
                     printf("\n\tDo you want to continue? [y/n]...");
@@ -123,7 +180,7 @@ int main(void) {
 
     }
     else {
-        printf("\n\tERROR: only options '1' or '2' are possible!\n\a");
+        exit(0);
     }
 
 
